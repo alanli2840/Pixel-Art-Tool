@@ -62,6 +62,33 @@ main {
     box-shadow: 0 0 16px 0.5px black;
 }
 
+.tooltip {
+    position: absolute;
+    bottom: -55px;
+    height: 2.5rem;
+    width: 8rem;
+    background: var(--very-very-dark);
+    color: var(--very-very-light);
+    border: 2px solid var(--very-very-light);
+    border-radius: 6px;
+    box-shadow: 0 0 16px 0.5px black;
+    display: grid;
+    place-items: center;
+    font-family: 'Lato', sans-serif;
+    visibility: hidden;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -8px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: transparent transparent var(--very-very-light) transparent;
+}
+
 .tool-button:hover,
 .tool-button:active {
     transform: scale(1.075);
@@ -73,6 +100,11 @@ main {
 .tool-button:active svg{
     transform: scale(1.05);
     fill: var(--very-very-light);
+}
+
+.tool-button:hover .tooltip,
+.tool-button:active .tooltip{
+    visibility: visible;
 }
 
 .active {
@@ -203,7 +235,7 @@ main {
         "selector selector"
         "pen eraser"
         "lighten darken"
-        "mirror-draw bucket";
+        "mirror-draw fill";
     grid-auto-columns: 1fr;
     grid-auto-rows: 1fr;
     place-items: center;
