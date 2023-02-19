@@ -1,0 +1,263 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@700;900&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    --header-height: 4rem;
+    --footer-height: 3.25rem;
+    --darkest: #212529;
+    --very-very-dark: #343A40;
+    --very-dark: #495057;
+    --dark: #6C757D;
+    --dark-med: #ADB5BD;
+    --med: #CED4DA;
+    --light-med: #DEE2E6;
+    --light: #E9ECEF;
+    --very-very-light: #F8F9FA;
+    margin: 0;
+    font-family: 'Lato', sans-serif;
+}
+
+header {
+    height: var(--header-height);
+    display: grid;
+    place-items: center;
+    position: relative;
+    background: var(--very-very-dark);
+}
+
+header .title {
+    margin: 0;
+    color: var(--very-very-light);
+    font-weight: 900;
+}
+
+main {
+    min-height: calc(100svh - var(--header-height) - var(--footer-height));
+    background: var(--very-very-dark);
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    border-top: 3.5px solid var(--dark-med);
+    border-bottom: 3.5px solid var(--dark-med);
+}
+
+.tool-title {
+    color: var(--very-very-light);
+    font-weight: 700;
+}
+
+.tool-button {
+    border: none;
+    background: var(--very-very-light);
+    height: 60px;
+    width: 60px;
+    padding: 10px;
+    display: grid;
+    place-items: center;
+    border: 4px solid var(--dark);
+    border-radius: 16px;
+    transition: all 100ms linear;
+    box-shadow: 0 0 16px 0.5px black;
+}
+
+.tool-button:hover,
+.tool-button:active {
+    transform: scale(1.075);
+    background: var(--very-very-dark);
+    border-color: var(--very-very-light);
+}
+
+.tool-button:hover svg,
+.tool-button:active svg{
+    transform: scale(1.05);
+    fill: var(--very-very-light);
+}
+
+.active {
+    transform: scale(1.075);
+    background: var(--very-very-dark);
+    border-color: var(--very-very-light);
+}
+
+.active svg {
+    transform: scale(1.05);
+    fill: var(--very-very-light);
+}
+
+.tool-button svg {
+    fill: var(--very-very-dark);
+    transition: all 100ms linear;
+}
+
+.transform {
+    background: var(--very-very-dark);
+    border-right: 3.5px solid var(--dark-med);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.transform-tools {
+    display: grid;
+    grid-template-areas:
+        "title title"
+        "rotate-left rotate-right"
+        "flip-ver flip-hor"
+        "undo redo";
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
+    place-items: center;
+    gap: 2rem;
+}
+
+.transform-tools .tool-title {
+    grid-area: title;
+}
+
+.flip-ver svg{
+    width: 26px;
+    height: 32px;
+}
+
+.flip-hor svg{
+    width: 32px;
+    height: 26px;
+}
+
+.size-slider {
+    width: 225px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: center;
+    gap: 2rem;
+}
+
+.slider-text h2 {
+    margin: 0;
+    text-align: center;
+    color: var(--very-very-light);
+    font-weight: 700;
+}
+
+.slider {
+    appearance: none;
+    width: 100%;
+    height: 12px;
+    border-radius: 8px;  
+    background: var(--very-very-light);
+    box-shadow: 0 0 16px 0.5px black;
+}
+  
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%; 
+    background: var(--dark);
+    cursor: pointer;
+}
+
+
+.drawing {
+    background: var(--very-very-dark);
+    border-left: 3.5px solid var(--dark-med);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.drawing .tool-title {
+    margin: 0;
+}
+
+.color-picker {
+    appearance: none;
+    height: 100px;
+    width: 100px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background: transparent;
+}
+
+.color-picker::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-picker::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px 0.5px black;
+}
+
+.drawing-tools {
+    display: grid;
+    grid-template-areas:
+        "selector selector"
+        "pen eraser"
+        "lighten darken"
+        "mirror-draw bucket";
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
+    place-items: center;
+    gap: 1rem;
+}
+
+.color-selector {
+    grid-area: selector;
+}
+
+.clear-button {
+    appearance: none;
+    border: 4px solid var(--dark);
+    padding: 0;
+    border-radius: 12px;
+    width: 150px;
+    height: 45px;
+    background-color: var(--very-very-light);
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--very-very-dark);
+    box-shadow: 0 0 16px 0.5px black;
+    transition: all 100ms linear;
+}
+
+.clear-button:hover,
+.clear-button:active {
+    transform: translateY(-4px);
+    background: var(--very-very-dark);
+    border-color: var(--very-very-light);
+    color: var(--very-very-light);
+}
+
+footer {
+    height: var(--footer-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: var(--very-very-dark);
+}
+
+footer p {
+    color: var(--very-very-light);
+}
+
+footer svg {
+    fill: var(--very-very-light);
+    transform: all 150ms linear;
+}
+
+footer a:hover svg,
+footer a:active svg {
+    transform: scale(1.15);
+    fill: var(--dark-med);
+}
