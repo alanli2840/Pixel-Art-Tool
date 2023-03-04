@@ -20,6 +20,11 @@ body {
     font-family: 'Lato', sans-serif;
 }
 
+button:hover,
+button:active {
+    cursor: pointer;
+}
+
 header {
     height: var(--header-height);
     display: grid;
@@ -297,6 +302,7 @@ main {
 .grid-box {
     border: 1px solid var(--very-very-light);
     background-color: var(--very-very-dark);
+    transition: background-color 250ms linear;
 }
 
 .hidden {

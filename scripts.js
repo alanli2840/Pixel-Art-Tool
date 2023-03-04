@@ -1,30 +1,139 @@
 let sizeSlider = document.querySelector(".size-slider>input");
 let sliderText = document.querySelector(".slider-text>div");
+let colorPicker = document.querySelector(".color-picker");
 
+let defaultColor = "#343A40";
+let currentColor = "#000000";
 let grid = document.querySelector(".grid");
 let gridBoxes = new Map();
 let gridSize = sizeSlider.value;
 
 let drawingTools = document.querySelectorAll(".drawing-tools .tool-button");
+let colorSelector = document.querySelector(".color-selector");
+let pen = document.querySelector(".pen");
+let eraser = document.querySelector(".eraser");
+let lighten = document.querySelector(".lighten");
+let darken = document.querySelector(".darken");
+let mirrorDraw = document.querySelector(".mirror-draw");
+let fill = document.querySelector(".fill");
+let clear = document.querySelector(".clear-button");
+
+let mouseDown = 0;
+
+document.body.onmousedown = function() { 
+    mouseDown = 1;
+}
+
+document.body.onmouseup = function() {
+    mouseDown = 0;
+}
+
+colorPicker.addEventListener('input', function() {
+    currentColor = `${this.value}`;
+});
+
+const selectColor = boxNum => {
+    if(gridBoxes.get(boxNum) == "none") return;
+    currentColor = gridBoxes.get(boxNum);
+    colorPicker.value = currentColor;
+}
+
+const color = (box, boxNum) => {
+    box.style.backgroundColor = currentColor;
+    gridBoxes.set(boxNum, currentColor);
+}
+
+const erase = (box, boxNum) => {
+    box.style.backgroundColor = defaultColor;
+    gridBoxes.set(boxNum, "none");
+}
+
+const lightenColor = (box, boxNum) => {
+  
+}
+
+const darkenColor = (box, boxNum) => {
+  
+}
+
+const mirrorDrawing = (box, boxNum) => {
+  
+}
+
+const colorFill = (box, boxNum) => {
+  
+}
+
+const updateBox = (boxNum, isClick) => {
+    if(!mouseDown && !isClick) return;
+    const box = document.querySelector(`.box${boxNum}`);
+    switch(currentTool) {
+        case colorSelector: {
+            selectColor(boxNum);
+            break;
+        }
+        case pen: {
+            color(box, boxNum);
+            break;
+        }
+        case eraser: {
+            erase(box, boxNum);
+            break;
+        }
+        case lighten: {
+            lightenColor(box, boxNum);
+            break;
+        }
+        case darken: {
+            darkenColor(box, boxNum);
+            break;
+        }
+        case mirrorDraw: {
+            mirrorDrawing(box, boxNum);
+            break;
+        }
+        case fill: {
+            colorFill(box, boxNum);
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+}
+
+const clearBoard = () => {
+    for(const boxNum of gridBoxes.keys()) {
+        erase(document.querySelector(`.box${boxNum}`), boxNum);
+    }
+}
+
+clear.addEventListener('click', clearBoard);
 
 const loadGrid = () => {
     sliderText.textContent = `${gridSize} x ${gridSize}`;
     for(let i = 1; i <= gridSize * gridSize; i++) {
         const box = document.createElement("div");
+        box.addEventListener("mouseover", updateBox.bind(this, i, false));
+        box.addEventListener("mousedown", updateBox.bind(this, i, true));
         grid.appendChild(box).className = `grid-box box${i}`;
         gridBoxes.set(i, 'none');
     }
 }
 
-const addBoxes = (gridSizeOld) => {
+const addBoxes = gridSizeOld => {
+    clearBoard();
     for(let i = gridSizeOld * gridSizeOld + 1; i <= gridSize * gridSize; i++) {
         const box = document.createElement("div");
+        box.addEventListener("mouseover", updateBox.bind(this, i, false));
+        box.addEventListener("click", updateBox.bind(this, i, true));
         grid.appendChild(box).className = `grid-box box${i}`;
         gridBoxes.set(i, 'none');
     }
 }
 
-const removeBoxes = (gridSizeOld) => {
+const removeBoxes = gridSizeOld => {
+    clearBoard();
     for(let i = gridSize * gridSize + 1; i <= gridSizeOld * gridSizeOld; i++) {
         const box = document.querySelector(`.box${i}`);
         box.remove();
