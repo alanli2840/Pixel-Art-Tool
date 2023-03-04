@@ -99,6 +99,7 @@ main {
     transform: scale(1.075);
     background: var(--very-very-dark);
     border-color: var(--very-very-light);
+    z-index: 5;
 }
 
 .tool-button:hover svg,
@@ -118,7 +119,7 @@ main {
     border-color: var(--very-very-light);
 }
 
-.active svg {
+.tool-button.active svg {
     transform: scale(1.05);
     fill: var(--very-very-light);
 }

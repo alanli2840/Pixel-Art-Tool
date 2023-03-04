@@ -5,6 +5,8 @@ let grid = document.querySelector(".grid");
 let gridBoxes = new Map();
 let gridSize = sizeSlider.value;
 
+let drawingTools = document.querySelectorAll(".drawing-tools .tool-button");
+
 const loadGrid = () => {
     sliderText.textContent = `${gridSize} x ${gridSize}`;
     for(let i = 1; i <= gridSize * gridSize; i++) {
@@ -50,3 +52,19 @@ sizeSlider.addEventListener('input', function() {
 });
 
 document.addEventListener('DOMContentLoaded', loadGrid());
+
+let currentTool = null;
+const selectTool = (tool) => {
+    if(currentTool == tool) {
+        currentTool = null;
+        tool.classList.toggle('active');
+        return;
+    }
+    if(!(currentTool == null)) currentTool.classList.toggle('active');
+    currentTool = tool;
+    currentTool.classList.toggle('active');
+}
+
+drawingTools.forEach(tool => {
+    tool.addEventListener('click', selectTool.bind(this, tool));
+});
