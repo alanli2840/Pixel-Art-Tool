@@ -5,8 +5,8 @@
 }
 
 body {
-    --header-height: 4rem;
-    --footer-height: 3.25rem;
+    --header-height: 5rem;
+    --footer-height: 4rem;
     --darkest: #212529;
     --very-very-dark: #343A40;
     --very-dark: #495057;
@@ -32,6 +32,7 @@ header .title {
     margin: 0;
     color: var(--very-very-light);
     font-weight: 900;
+    font-size: 3rem;
 }
 
 main {
@@ -46,17 +47,18 @@ main {
 .tool-title {
     color: var(--very-very-light);
     font-weight: 700;
+    font-size: 2.5rem;
 }
 
 .tool-button {
     border: none;
     background: var(--very-very-light);
-    height: 60px;
-    width: 60px;
+    height: 75px;
+    width: 75px;
     padding: 10px;
     display: grid;
     place-items: center;
-    border: 4px solid var(--dark);
+    border: 6px solid var(--dark);
     border-radius: 16px;
     transition: all 100ms linear;
     box-shadow: 0 0 16px 0.5px black;
@@ -66,16 +68,19 @@ main {
     position: absolute;
     bottom: -55px;
     height: 2.5rem;
-    width: 8rem;
-    background: var(--very-very-dark);
-    color: var(--very-very-light);
-    border: 2px solid var(--very-very-light);
+    width: fit-content;
+    white-space: nowrap;
+    padding: 0 8px;
+    background: var(--very-dark);
+    color: var(--light);
+    border: 3px solid var(--light);
     border-radius: 6px;
     box-shadow: 0 0 16px 0.5px black;
     display: grid;
     place-items: center;
     font-family: 'Lato', sans-serif;
-    visibility: hidden;
+    font-size: 1.1rem;
+    display: none;
 }
 
 .tooltip::after {
@@ -86,7 +91,7 @@ main {
     margin-left: -8px;
     border-width: 8px;
     border-style: solid;
-    border-color: transparent transparent var(--very-very-light) transparent;
+    border-color: transparent transparent var(--light) transparent;
 }
 
 .tool-button:hover,
@@ -99,12 +104,12 @@ main {
 .tool-button:hover svg,
 .tool-button:active svg{
     transform: scale(1.05);
-    fill: var(--very-very-light);
+    fill: var(--light);
 }
 
 .tool-button:hover .tooltip,
 .tool-button:active .tooltip{
-    visibility: visible;
+    display: grid;
 }
 
 .active {
@@ -161,7 +166,7 @@ main {
 }
 
 .size-slider {
-    width: 225px;
+    width: 65%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -169,11 +174,12 @@ main {
     gap: 2rem;
 }
 
-.slider-text h2 {
+.slider-text {
     margin: 0;
     text-align: center;
     color: var(--very-very-light);
-    font-weight: 700;
+    font-weight: 900;
+    font-size: 2rem;
 }
 
 .slider {
@@ -251,12 +257,12 @@ main {
     border: 4px solid var(--dark);
     padding: 0;
     border-radius: 12px;
-    width: 150px;
+    width: 180px;
     height: 45px;
     background-color: var(--very-very-light);
     font-family: 'Lato', sans-serif;
-    font-weight: 700;
-    font-size: 1.25rem;
+    font-weight: 900;
+    font-size: 1.5rem;
     color: var(--very-very-dark);
     box-shadow: 0 0 16px 0.5px black;
     transition: all 100ms linear;
@@ -270,6 +276,32 @@ main {
     color: var(--very-very-light);
 }
 
+.grid-section {
+    display: grid;
+    place-items: center;
+}
+
+.grid {
+    --grid-columns: 16;
+    --grid-rows: 16;
+    width: 70%;
+    aspect-ratio: 1/1;
+    border: 1px solid var(--very-very-light);
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), 1fr);
+    grid-template-rows: repeat(var(--grid-rows), 1fr);
+    box-shadow: 0 0 32px 1px black;
+}
+
+.grid-box {
+    border: 1px solid var(--very-very-light);
+    background-color: var(--very-very-dark);
+}
+
+.hidden {
+    display: none;
+}
+
 footer {
     height: var(--footer-height);
     display: flex;
@@ -281,6 +313,7 @@ footer {
 
 footer p {
     color: var(--very-very-light);
+    font-size: 1.15rem;
 }
 
 footer svg {
