@@ -5,8 +5,8 @@
 }
 
 body {
-    --header-height: 5rem;
-    --footer-height: 4rem;
+    --header-height: 4rem;
+    --footer-height: 2.75rem;
     --darkest: #212529;
     --very-very-dark: #343A40;
     --very-dark: #495057;
@@ -37,7 +37,7 @@ header .title {
     margin: 0;
     color: var(--very-very-light);
     font-weight: 900;
-    font-size: 3rem;
+    font-size: 2.5rem;
 }
 
 main {
@@ -52,18 +52,18 @@ main {
 .tool-title {
     color: var(--very-very-light);
     font-weight: 700;
-    font-size: 2.5rem;
+    font-size: 2.25rem;
 }
 
 .tool-button {
     border: none;
     background: var(--very-very-light);
-    height: 75px;
-    width: 75px;
+    height: 60px;
+    width: 60px;
     padding: 10px;
     display: grid;
     place-items: center;
-    border: 6px solid var(--dark);
+    border: 4px solid var(--dark);
     border-radius: 16px;
     transition: all 100ms linear;
     box-shadow: 0 0 16px 0.5px black;
@@ -72,7 +72,7 @@ main {
 .tooltip {
     position: absolute;
     bottom: -55px;
-    height: 2.5rem;
+    height: 2rem;
     width: fit-content;
     white-space: nowrap;
     padding: 0 8px;
@@ -84,8 +84,9 @@ main {
     display: grid;
     place-items: center;
     font-family: 'Lato', sans-serif;
-    font-size: 1.1rem;
+    font-size: .8rem;
     display: none;
+    pointer-events: none; 
 }
 
 .tooltip::after {
@@ -141,7 +142,7 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .transform-tools {
@@ -154,7 +155,7 @@ main {
     grid-auto-columns: 1fr;
     grid-auto-rows: 1fr;
     place-items: center;
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .transform-tools .tool-title {
@@ -185,7 +186,7 @@ main {
     text-align: center;
     color: var(--very-very-light);
     font-weight: 900;
-    font-size: 2rem;
+    font-size: 1.5rem;
 }
 
 .slider {
@@ -214,7 +215,7 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .drawing .tool-title {
@@ -263,7 +264,7 @@ main {
     border: 4px solid var(--dark);
     padding: 0;
     border-radius: 12px;
-    width: 180px;
+    width: 160px;
     height: 45px;
     background-color: var(--very-very-light);
     font-family: 'Lato', sans-serif;
@@ -300,7 +301,7 @@ main {
 }
 
 .grid-box {
-    border: 1px solid var(--very-very-light);
+    border: .5px solid var(--very-very-light);
     background-color: var(--very-very-dark);
     transition: background-color 250ms linear;
 }
@@ -320,7 +321,7 @@ footer {
 
 footer p {
     color: var(--very-very-light);
-    font-size: 1.15rem;
+    font-size: 1rem;
 }
 
 footer svg {
