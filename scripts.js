@@ -57,11 +57,36 @@ const darkenColor = (box, boxNum) => {
 }
 
 const mirrorDrawing = (box, boxNum) => {
-  
+  color(box, boxNum);
+  if(((boxNum * 2) - 1) == gridSize) return;
+
+  let remainder = (boxNum - 1) % gridSize;
+  let opposite;
+  if(remainder <= gridSize/2) {
+    opposite = gridSize - remainder - 1 + (boxNum - remainder);
+  }
+  else {
+    opposite =  (boxNum - remainder) + (gridSize - remainder - 1);
+  }
+
+  color(document.querySelector(`.box${opposite}`), opposite);
 }
 
-const colorFill = (box, boxNum) => {
-  
+const colorFill = (boxNum) => {
+  let clusterColor = gridBoxes.get(boxNum);
+  if(clusterColor == currentColor) return;
+  fillHelper(boxNum, clusterColor)
+}
+
+const fillHelper = (boxNum, clusterColor) => {
+    if(gridBoxes.get(boxNum) != clusterColor) return;
+    if(gridBoxes.get(boxNum) == clusterColor) color(document.querySelector(`.box${boxNum}`), currentColor);
+    
+    gridBoxes.set(boxNum, currentColor);
+    if(!(boxNum % gridSize == 1)) fillHelper(boxNum - 1, clusterColor);
+    if(!(boxNum % gridSize == 0)) fillHelper(boxNum + 1, clusterColor);
+    if(!(boxNum - 16 < 0)) fillHelper(boxNum - 16, clusterColor);
+    if(!(boxNum + 16 > gridSize * gridSize)) fillHelper(boxNum + 16, clusterColor);
 }
 
 const updateBox = (boxNum, isClick) => {
@@ -93,7 +118,7 @@ const updateBox = (boxNum, isClick) => {
             break;
         }
         case fill: {
-            colorFill(box, boxNum);
+            colorFill(boxNum);
             break;
         }
         default: {
