@@ -301,9 +301,8 @@ main {
 }
 
 .grid-box {
-    border: .5px solid var(--very-very-light);
+    border: .5px solid var(--dark);
     background-color: var(--very-very-dark);
-    transition: background-color 250ms linear;
 }
 
 .hidden {

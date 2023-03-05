@@ -18,9 +18,7 @@ let mirrorDraw = document.querySelector(".mirror-draw");
 let fill = document.querySelector(".fill");
 let clear = document.querySelector(".clear-button");
 
-let mouseDown = false;
-grid.onmousedown = () => mouseDown = true;
-grid.onmouseup = () => mouseDown = false;
+let drawing = false;
 
 colorPicker.addEventListener('input', function() {
     currentColor = `${this.value}`;
@@ -99,16 +97,23 @@ const fillHelper = (boxNum, clusterColor) => {
     gridBoxes.set(boxNum, currentColor);
     if(!(boxNum % gridSize == 1)) fillHelper(boxNum - 1, clusterColor);
     if(!(boxNum % gridSize == 0)) fillHelper(boxNum + 1, clusterColor);
-    if(!(boxNum - 16 < 0)) fillHelper(boxNum - 16, clusterColor);
-    if(!(boxNum + 16 > gridSize * gridSize)) fillHelper(boxNum + 16, clusterColor);
+    if(!(boxNum - gridSize < 0)) fillHelper(boxNum - gridSize, clusterColor);
+    if(!(+boxNum + +gridSize > gridSize * gridSize)) fillHelper(+boxNum + +gridSize, clusterColor);
 }
 
 const updateBox = (boxNum, isClick) => {
-    if(!mouseDown && !isClick) return;
+    if(isClick) {
+        if(drawing) drawing = false;
+        else drawing = true;
+    }
+    if(!drawing) return;
     const box = document.querySelector(`.box${boxNum}`);
     switch(currentTool) {
         case colorSelector: {
-            selectColor(boxNum);
+            if(isClick) {
+                selectColor(boxNum);
+                drawing = false;
+            }
             break;
         }
         case pen: {
@@ -132,7 +137,10 @@ const updateBox = (boxNum, isClick) => {
             break;
         }
         case fill: {
-            colorFill(boxNum);
+            if(isClick) {
+                colorFill(boxNum);
+                drawing = false;
+            }
             break;
         }
         default: {
@@ -153,8 +161,8 @@ const loadGrid = () => {
     sliderText.textContent = `${gridSize} x ${gridSize}`;
     for(let i = 1; i <= gridSize * gridSize; i++) {
         const box = document.createElement("div");
-        box.addEventListener("mouseover", updateBox.bind(this, i, false));
-        box.addEventListener("mousedown", updateBox.bind(this, i, true));
+        box.addEventListener("mouseenter", updateBox.bind(this, i, false));
+        box.addEventListener("click", updateBox.bind(this, i, true));
         grid.appendChild(box).className = `grid-box box${i}`;
         gridBoxes.set(i, defaultColor);
     }
@@ -165,7 +173,7 @@ const addBoxes = gridSizeOld => {
     for(let i = gridSizeOld * gridSizeOld + 1; i <= gridSize * gridSize; i++) {
         const box = document.createElement("div");
         box.addEventListener("mouseover", updateBox.bind(this, i, false));
-        box.addEventListener("mousedown", updateBox.bind(this, i, true));
+        box.addEventListener("click", updateBox.bind(this, i, true));
         grid.appendChild(box).className = `grid-box box${i}`;
         gridBoxes.set(i, defaultColor);
     }
