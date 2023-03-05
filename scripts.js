@@ -39,6 +39,7 @@ const selectColor = boxNum => {
 }
 
 const color = (box, boxNum) => {
+
     box.style.backgroundColor = currentColor;
     gridBoxes.set(boxNum, currentColor);
 }
@@ -80,7 +81,7 @@ const colorFill = (boxNum) => {
 
 const fillHelper = (boxNum, clusterColor) => {
     if(gridBoxes.get(boxNum) != clusterColor) return;
-    if(gridBoxes.get(boxNum) == clusterColor) color(document.querySelector(`.box${boxNum}`), currentColor);
+    if(gridBoxes.get(boxNum) == clusterColor) color(document.querySelector(`.box${boxNum}`), boxNum);
     
     gridBoxes.set(boxNum, currentColor);
     if(!(boxNum % gridSize == 1)) fillHelper(boxNum - 1, clusterColor);
