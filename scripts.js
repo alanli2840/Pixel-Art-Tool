@@ -52,24 +52,23 @@ const erase = (box, boxNum) => {
     gridBoxes.set(boxNum, defaultColor);
 };
 
+const checkColorVal = rgbVal => {
+    if(rgbVal >= 255) rgbVal = 255; //make sure that the hex value does not go higher than FF
+    if(rgbVal <= 0) rgbVal = 0; //make sure that the hex value does not go lower than 00
+    rgbVal = (rgbVal).toString(16);
+    if(rgbVal.length == 1) rgbVal = 0 + rgbVal; //if the hex value has only one digit, prepend 0 to make valid hex color
+    return rgbVal;
+}
+
 //use bitwise operators to change shade of color using it's hex value
 const changeShade = (box, boxNum, shade) => {
     let currentVal = parseInt(gridBoxes.get(boxNum).substring(1), 16);
 
-    let r = (currentVal >> 16) + shade;
-    if(r >= 255) r = 255; //make sure that the hex value does not go higher than FF
-    if(r <= 0) r = 0; //make sure that the hex value does not go lower than 00
+    const r = checkColorVal((currentVal >> 16) + shade);
+    const g = checkColorVal((currentVal >> 8 & 0x0000ff) + shade);
+    const b = checkColorVal((currentVal & 0x0000ff) + shade);
 
-    let g = (currentVal >> 8 & 0x0000ff) + shade;
-    if(g >= 255) g = 255;
-    if(g <= 0) g = 0;
-
-    let b = (currentVal & 0x0000ff) + shade;
-    if(b >= 255) b = 255;
-    if(b <= 0) b = 0;
-
-    let newColor = `#${((r << 16) | (g << 8) | b).toString(16)}`;
-    console.log(newColor);
+    const newColor = `#${r}${g}${b}`;
     color(box, boxNum, newColor);
 };
 
