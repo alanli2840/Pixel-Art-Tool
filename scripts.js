@@ -31,6 +31,8 @@ let horizontalFlipper = document.querySelector(".flip-hor");
 let undoButton = document.querySelector(".undo");
 let redoButton = document.querySelector(".redo");
 
+let rotationDeg = 0;
+
 const getBoxElemenet = boxNum => box = document.querySelector(`.box${boxNum}`);
 
 colorPicker.addEventListener('input', function() {
@@ -178,13 +180,12 @@ const updateBox = (boxNum, isClick) => {
 const hoverEffect = boxNum => {
     if(currentTool == null) return;
     const box = getBoxElemenet(boxNum);
+    if(!mouseDown)
+        box.style.cursor = "pointer";
+    else
+        box.style.cursor = "default";
     box.classList.toggle("hover");
-    if(parseInt(gridBoxes.get(boxNum).substring(1), 16) < parseInt(909090, 16)) {
-        box.style.setProperty('--box-highlight', doubleVLight);
-    }
-    else {
-        box.style.setProperty('--box-highlight', doubleVDark);
-    }
+    box.style.setProperty('--box-highlight', doubleVLight);
 };
 
 const clearBoard = () => {
@@ -196,11 +197,19 @@ const clearBoard = () => {
 clear.addEventListener('click', clearBoard);
 
 const rotateLeft = () => {
-
+    if(Math.abs(rotationDeg) == 270)
+        rotationDeg = 0;
+    else
+        rotationDeg -= 90;
+    grid.style.transform = `rotate(${rotationDeg}deg)`;
 };
 
 const rotateRight = () => {
-
+    if(Math.abs(rotationDeg) == 270)
+        rotationDeg = 0;
+    else
+        rotationDeg += 90;
+    grid.style.transform = `rotate(${rotationDeg}deg)`;
 };
 
 //flips an entire column or row using the opposite box calculation function
@@ -240,6 +249,22 @@ const flipHor = () => {
     }
 };
 
+//takes into account the rotation degree so horizontal and vertical flips are maintained properly
+const flip = flipType => {
+    if(flipType == 'hor') {
+        if((Math.abs(rotationDeg)/90) % 2 == 0)
+            flipHor();
+        else
+            flipVer();
+    }
+    else if(flipType == 'ver') {
+        if((Math.abs(rotationDeg)/90) % 2 == 0)
+            flipVer();
+        else
+            flipHor();
+    }
+}
+
 const undo = () => {
 
 };
@@ -248,15 +273,19 @@ const redo = () => {
 
 };
 
+const addEvents = (box, boxNum) => {
+    box.addEventListener("mouseover", updateBox.bind(this, boxNum, false));
+    box.addEventListener("mousedown", updateBox.bind(this, boxNum, true));  
+    box.addEventListener("mouseenter", hoverEffect.bind(this, boxNum));
+    box.addEventListener("mouseleave", hoverEffect.bind(this, boxNum));
+}
+
 //base loading of grid
 const loadGrid = () => {
     sliderText.textContent = `${gridSize} x ${gridSize}`;
     for(let i = 1; i <= gridSize * gridSize; i++) {
         const box = document.createElement("div");
-        box.addEventListener("mouseover", updateBox.bind(this, i, false));
-        box.addEventListener("mousedown", updateBox.bind(this, i, true));
-        box.addEventListener("mouseenter", hoverEffect.bind(this, i));
-        box.addEventListener("mouseleave", hoverEffect.bind(this, i));
+        addEvents(box, i);
         grid.appendChild(box).className = `grid-box box${i}`;
         gridBoxes.set(i, defaultColor);
     }
@@ -267,10 +296,7 @@ const addBoxes = gridSizeOld => {
     clearBoard();
     for(let i = gridSizeOld * gridSizeOld + 1; i <= gridSize * gridSize; i++) {
         const box = document.createElement("div");
-        box.addEventListener("mouseover", updateBox.bind(this, i, false));
-        box.addEventListener("mousedown", updateBox.bind(this, i, true));
-        box.addEventListener("mouseenter", hoverEffect.bind(this, i));
-        box.addEventListener("mouseleave", hoverEffect.bind(this, i));
+        addEvents(box, i);
         grid.appendChild(box).className = `grid-box box${i}`;
         gridBoxes.set(i, defaultColor);
     }
@@ -325,7 +351,7 @@ drawingTools.forEach(tool => {
 
 leftRotater.addEventListener('click', rotateLeft);
 rightRotater.addEventListener('click', rotateRight);
-verticalFlipper.addEventListener('click', flipVer);
-horizontalFlipper.addEventListener('click', flipHor);
+verticalFlipper.addEventListener('click', flip.bind(this, 'ver'));
+horizontalFlipper.addEventListener('click', flip.bind(this, 'hor'));
 undoButton.addEventListener('click', undo);
 redoButton.addEventListener('click', redo);
