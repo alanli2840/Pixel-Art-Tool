@@ -3,6 +3,8 @@ let sliderText = document.querySelector(".slider-text>div");
 let colorPicker = document.querySelector(".color-picker");
 
 let defaultColor = "#343A40";
+let doubleVLight = "#F8F9FA";
+let doubleVDark = "#343A40";
 let currentColor = "#000000";
 let grid = document.querySelector(".grid");
 let gridBoxes = new Map();
@@ -103,8 +105,14 @@ const fillHelper = (boxNum, clusterColor) => {
 
 const updateBox = (boxNum, isClick) => {
     if(isClick) {
-        if(drawing) drawing = false;
-        else drawing = true;
+        if(drawing) {
+            drawing = false;
+            if(currentTool != null) document.body.style.cursor = "default";
+        }
+        else {
+            drawing = true;
+            if(currentTool != null) document.body.style.cursor = "pointer";
+        }
     }
     if(!drawing) return;
     const box = document.querySelector(`.box${boxNum}`);
@@ -112,6 +120,7 @@ const updateBox = (boxNum, isClick) => {
         case colorSelector: {
             if(isClick) {
                 selectColor(boxNum);
+                document.body.style.cursor = "default";
                 drawing = false;
             }
             break;
@@ -139,6 +148,7 @@ const updateBox = (boxNum, isClick) => {
         case fill: {
             if(isClick) {
                 colorFill(boxNum);
+                document.body.style.cursor = "default";
                 drawing = false;
             }
             break;
@@ -146,6 +156,18 @@ const updateBox = (boxNum, isClick) => {
         default: {
             break;
         }
+    }
+}
+
+const hoverEffect = (boxNum) => {
+    if(currentTool == null) return;
+    const box = document.querySelector(`.box${boxNum}`);
+    box.classList.toggle("hover");
+    if(parseInt(gridBoxes.get(boxNum).substring(1), 16) < parseInt(808080, 16)) {
+        box.style.setProperty('--box-highlight', doubleVLight);
+    }
+    else {
+        box.style.setProperty('--box-highlight', doubleVDark);
     }
 }
 
@@ -161,8 +183,10 @@ const loadGrid = () => {
     sliderText.textContent = `${gridSize} x ${gridSize}`;
     for(let i = 1; i <= gridSize * gridSize; i++) {
         const box = document.createElement("div");
-        box.addEventListener("mouseenter", updateBox.bind(this, i, false));
+        box.addEventListener("mouseover", updateBox.bind(this, i, false));
         box.addEventListener("click", updateBox.bind(this, i, true));
+        box.addEventListener("mouseenter", hoverEffect.bind(this, i));
+        box.addEventListener("mouseleave", hoverEffect.bind(this, i));
         grid.appendChild(box).className = `grid-box box${i}`;
         gridBoxes.set(i, defaultColor);
     }
@@ -174,6 +198,8 @@ const addBoxes = gridSizeOld => {
         const box = document.createElement("div");
         box.addEventListener("mouseover", updateBox.bind(this, i, false));
         box.addEventListener("click", updateBox.bind(this, i, true));
+        box.addEventListener("mouseenter", hoverEffect.bind(this, i));
+        box.addEventListener("mouseleave", hoverEffect.bind(this, i));
         grid.appendChild(box).className = `grid-box box${i}`;
         gridBoxes.set(i, defaultColor);
     }
