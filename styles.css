@@ -2,6 +2,13 @@
 
 * {
     box-sizing: border-box;
+    outline: none;
+    user-drag: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 body {
@@ -307,7 +314,6 @@ main {
 }
 
 .hover {
-    transform: scale(1.08);
     border-width: 2px;
     border-color: var(--box-highlight);
 }
