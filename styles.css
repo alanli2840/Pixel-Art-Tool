@@ -1,17 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@700;900&display=swap');
+@font-face {
+    font-family: "Pixel Emulator";
+    src: url("./fonts/Pixel\ Emulator.otf");
+}
 
 * {
     box-sizing: border-box;
     outline: none;
+    font-family: 'Pixel Emulator', 'Lato', sans-serif;
+}
+
+body {
     user-drag: none;
     -webkit-user-drag: none;
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
-}
-
-body {
     --header-height: 4rem;
     --footer-height: 2.75rem;
     --darkest: #212529;
@@ -24,7 +29,6 @@ body {
     --light: #E9ECEF;
     --very-very-light: #F8F9FA;
     margin: 0;
-    font-family: 'Lato', sans-serif;
 }
 
 button:hover {
@@ -44,7 +48,7 @@ header .title {
     margin: 0;
     color: var(--very-very-light);
     font-weight: 900;
-    font-size: 2.5rem;
+    font-size: 2.75rem;
 }
 
 .help-button {
@@ -82,7 +86,7 @@ main {
 .tool-title {
     color: var(--very-very-light);
     font-weight: 700;
-    font-size: 2.25rem;
+    font-size: 2rem;
 }
 
 .tool-button {
@@ -113,8 +117,7 @@ main {
     box-shadow: 0 0 16px 0.5px black;
     display: grid;
     place-items: center;
-    font-family: 'Lato', sans-serif;
-    font-size: .8rem;
+    font-size: .7rem;
     display: none;
     pointer-events: none; 
 }
@@ -213,7 +216,7 @@ main {
     text-align: center;
     color: var(--very-very-light);
     font-weight: 900;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
 }
 
 .slider {
@@ -295,9 +298,8 @@ main {
     width: 160px;
     height: 45px;
     background-color: var(--very-very-light);
-    font-family: 'Lato', sans-serif;
     font-weight: 900;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     color: var(--very-very-dark);
     box-shadow: 0 0 16px 0.5px black;
     transition: all 100ms linear;
@@ -341,7 +343,7 @@ main {
 }
 
 .hover {
-    border: var(--grid-first-border) solid var(--box-highlight); 
+    border: var(--grid-first-border) solid var(--very-very-light); 
 }
 
 .left-edge {

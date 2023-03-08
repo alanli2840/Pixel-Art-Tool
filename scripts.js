@@ -2,13 +2,12 @@ let sizeSlider = document.querySelector(".size-slider>input");
 let sliderText = document.querySelector(".slider-text>div");
 let colorPicker = document.querySelector(".color-picker");
 
-let defaultColor = "#343A40";
-let doubleVLight = "#F8F9FA";
-let doubleVDark = "#343A40";
-let currentColor = "#000000";
-let grid = document.querySelector(".grid");
-let gridBoxes = new Map();
-let gridSize = sizeSlider.value;
+let leftRotater = document.querySelector(".rotate-left");
+let rightRotater = document.querySelector(".rotate-right");
+let verticalFlipper = document.querySelector(".flip-ver");
+let horizontalFlipper = document.querySelector(".flip-hor");
+let undoButton = document.querySelector(".undo");
+let redoButton = document.querySelector(".redo");
 
 let drawingTools = document.querySelectorAll(".drawing-tools .tool-button");
 let colorSelector = document.querySelector(".color-selector");
@@ -19,25 +18,29 @@ let darken = document.querySelector(".darken");
 let mirrorDraw = document.querySelector(".mirror-draw");
 let fill = document.querySelector(".fill");
 let clear = document.querySelector(".clear-button");
-let isCleared = true;
+
+let defaultColor = "#343A40";
+let currentColor = "#000000";
+let grid = document.querySelector(".grid");
+let gridBoxes = new Map();
+let gridColors = new Map();
+let gridSize = sizeSlider.value;
 
 let mouseDown = false;
-document.body.onmousedown = () => mouseDown = true;
-document.body.onmouseup = () => mouseDown = false;
+document.querySelector(".grid-section").onmousedown = () => mouseDown = true;
+document.querySelector(".grid-section").onmouseup = () => mouseDown = false;
 
-let leftRotater = document.querySelector(".rotate-left");
-let rightRotater = document.querySelector(".rotate-right");
-let verticalFlipper = document.querySelector(".flip-ver");
-let horizontalFlipper = document.querySelector(".flip-hor");
-let undoButton = document.querySelector(".undo");
-let redoButton = document.querySelector(".redo");
-
+let currentTool = null;
 let rotationDeg = 0;
 
 const getBoxElement = boxNum => box = document.querySelector(`.box${boxNum}`);
 const getBoxColor = boxNum => gridBoxes.get(boxNum);
 
+//class to store individual pieces of data for undo/redo
 class changeData {
+    //a change can either be a transformation or color change
+    //if transform, there are no colors set
+    //if color, contains previous color for undo and new color for redo
     constructor(prevColor, newColor, transformation = null) {
         this.transformation = transformation;
         this.prevColor = prevColor
@@ -58,7 +61,7 @@ class changeData {
 
     get getTransform() {
         if(this.transformation == null) return;
-        return this.prevColor;
+        return this.transformation;
     }
 
     get getPrev() {
@@ -73,6 +76,7 @@ class changeData {
 }
 
 class gridStatus {
+    //gridStatus is a doubly-linked list node that contains a map of all changes
     constructor() {
         this.gridStatus = new Map();
         this.prevGridStatus = null;
@@ -99,16 +103,24 @@ class gridStatus {
         this.nextGridStatus = gridStatus;
     }
 
-    addStatus(changeData, boxNum = "transform") {
-        this.gridStatus.set(boxNum, changeData);
+    addStatus(data, boxNum = "transform") {
+        //if gridStatus already has boxNum, that means it's from changeShade
+        //so, to preserve the first prevColor, only change the newColor for the changeData
+        if(this.gridStatus.has(boxNum))
+            this.gridStatus.set(boxNum, new changeData(this.gridStatus.get(boxNum).prevColor, data.newColor));
+        else
+            this.gridStatus.set(boxNum, data);
     }
 }
 
+//history manager to cycle through undo/redo that is a doubly linked list
 class gridHistory {
     constructor() {
-        this.maxLength = 20;
+        //maxLength that can be changed
+        this.maxLength = 100;
         this.index = 0;
         this.current = new gridStatus();
+        //hail and tail are blank gridStatus values to allow stoppers for when reaching the ends for undo/redo
         this.head = this.current;
         this.tail = new gridStatus();
         this.head.nextGridStatus = this.tail;
@@ -124,11 +136,14 @@ class gridHistory {
     }
 
     updateHistory(gridStatus) {
+        //starts cutting off elements from the beginning of list if maxLength is reached
         if(this.index == this.maxLength) {
             this.head = this.head.nextGridStatus;
             this.head.prevGridStatus = null;
             this.index--;
         }
+        //if current is tail from redo, go back to a non-empty gridStatus (tail.prevGridStatus)
+        if(this.current = this.tail) this.current = this.tail.prevGridStatus;
         this.current.nextGridStatus = gridStatus;
         gridStatus.prevGridStatus = this.current;
         this.current = gridStatus;
@@ -138,21 +153,43 @@ class gridHistory {
     }
 
     undo() {
-        if(this.current == this.head) return null;
+        //no undos when history has no changes yet
+        if(this.head.nextGridStatus == this.tail) {
+            return;
+        }
+        //cannot undo further once the end is reached
+        if(this.current == this.head) {
+            return null;
+        }
+        else if(this.current == this.tail) {
+            this.current = this.current.prevGridStatus;
+        }
+        //returnVal has to be the current one as it contains both the prev and new changes
         let returnVal = this.current;
         this.current = this.current.prevGridStatus;
-        this.index--;
+        if(this.current == this.head)
+            this.index = 0;
+        else
+            this.index--;
         return returnVal;
     }
 
     redo() {
-        if(this.current == this.head)
+        if(this.head.nextGridStatus == this.tail) {
+            return;
+        }
+        //if at the head, go forwards one node to get the proper data and increment index since it's an extra movement
+        if(this.current == this.head) {
             this.current = this.head.nextGridStatus;
-        else if(this.current == this.tail) 
-            return null;
+            this.index++;
+        }
+        else if(this.current == this.tail) {
+            this.current == this.tail.prevGridStatus;
+            return;
+        }
         let returnVal = this.current;
         this.current = this.current.nextGridStatus;
-        this.index++;
+        if(this.current != this.tail) this.index++;
         return returnVal;
     }
 }
@@ -163,19 +200,36 @@ colorPicker.addEventListener('input', function() {
     currentColor = `${this.value}`;
 });
 
+//update the map of gridColors to see what colors are currently used
+const updateColors = (color, change) => {
+    if(gridColors.has(color))
+        gridColors.set(color, +gridColors.get(color) + +change);
+    else
+        gridColors.set(color, change);
+}
+
 const selectColor = boxNum => {
     currentColor = getBoxColor(boxNum);
     colorPicker.value = currentColor;
 };
 
-const color = (box, boxNum, color) => {
-    box.style.backgroundColor = color;
-    gridBoxes.set(boxNum, color);
+const color = (box, boxNum, newColor, isHistory = false) => {
+    const prevColor = getBoxColor(boxNum);
+    if(prevColor == newColor) return;
+    
+    updateColors(prevColor, -1);
+    updateColors(newColor, 1);
+
+    if(!isHistory) {
+        history.current.addStatus(new changeData(prevColor, newColor), boxNum);
+    }
+
+    box.style.backgroundColor = newColor;
+    gridBoxes.set(boxNum, newColor);
 };
 
 const erase = (box, boxNum) => {
-    box.style.backgroundColor = defaultColor;
-    gridBoxes.set(boxNum, defaultColor);
+    color(box, boxNum, defaultColor);
 };
 
 const checkColorVal = rgbVal => {
@@ -267,6 +321,10 @@ const fillHelper = (boxNum, clusterColor) => {
 //the function that is called that has calls to all drawing tools
 const updateBox = (boxNum, isClick) => {
     if(!mouseDown && !isClick) return;
+    if(currentTool != null && currentTool != colorSelector && isClick) {
+        //console.log(history);
+        history.updateHistory(new gridStatus());
+    }
     const box = getBoxElement(boxNum);
     switch(currentTool) {
         case colorSelector: {
@@ -276,7 +334,6 @@ const updateBox = (boxNum, isClick) => {
         }
         case pen: {
             color(box, boxNum, currentColor);
-            isCleared = false;
             break;
         }
         case eraser: {
@@ -285,23 +342,19 @@ const updateBox = (boxNum, isClick) => {
         }
         case lighten: {
             lightenColor(box, boxNum);
-            isCleared = false;
             break;
         }
         case darken: {
             darkenColor(box, boxNum);
-            isCleared = false;
             break;
         }
         case mirrorDraw: {
             mirrorDrawing(box, boxNum);
-            isCleared = false;
             break;
         }
         case fill: {
             //click only tool (no hover capabilities)
             if(isClick) colorFill(boxNum);
-            isCleared = false;
             break;
         }
         default: {
@@ -321,7 +374,6 @@ const hoverEffect = boxNum => {
     else
         document.body.style.cursor = "default";
     box.classList.toggle("hover");
-    box.style.setProperty('--box-highlight', doubleVLight);
 
     //gets rid of side borders if the box is on the edge of the grid
     if(boxNum % gridSize == 1) box.classList.toggle("left-edge");
@@ -331,10 +383,12 @@ const hoverEffect = boxNum => {
 };
 
 const clearBoard = () => {
-    if(isCleared) return;
+    //only clear if all grid boxes are defaultColor
+    if(gridColors.get(defaultColor) == gridSize * gridSize) return;
+    history.updateHistory(new gridStatus());
     isCleared = true;
     for(const boxNum of gridBoxes.keys()) {
-        erase(document.querySelector(`.box${boxNum}`), boxNum);
+        erase(getBoxElement(boxNum ), boxNum);
     }
 };
 
@@ -457,19 +511,30 @@ const undoRedo = (historyShift, doType) => {
             }
         }
     }
+    else {
+        for(const [boxNum, changeData] of historyShift.gridStatus.entries()) {
+            let updatedColor;
+            if(doType == "undo")
+                updatedColor = changeData.prevColor;
+            else if(doType == "redo")
+                updatedColor = changeData.newColor;
+            
+            color(getBoxElement(boxNum), boxNum, updatedColor, true);
+        }
+    }
 }
 
 const undo = () => {
     historyShift = history.undo();
-    console.log(historyShift);
-    console.log(history);
+    //console.log(historyShift);
+    //console.log(history);
     if(historyShift) undoRedo(historyShift, "undo");
 };
 
 const redo = () => {
     historyShift = history.redo();
-    console.log(historyShift);
-    console.log(history);
+    //console.log(historyShift);
+    //console.log(history);
     if(historyShift) undoRedo(historyShift, "redo");
 };
 
@@ -490,6 +555,7 @@ const loadGrid = () => {
         grid.appendChild(box).className = `grid-box box${i}`;
         gridBoxes.set(i, defaultColor);
     }
+    gridColors.set(defaultColor, gridSize * gridSize);
 };
 
 //adds boxes when the size is changed, but only the extra added boxes to save need of remaking board
@@ -501,6 +567,8 @@ const addBoxes = gridSizeOld => {
         grid.appendChild(box).className = `grid-box box${i}`;
         gridBoxes.set(i, defaultColor);
     }
+    gridColors = new Map();
+    gridColors.set(defaultColor, gridSize * gridSize);
 };
 
 //removes boxes when the size is changed, removing from existing boxes to save need of remaking board
@@ -511,6 +579,8 @@ const removeBoxes = gridSizeOld => {
         box.remove();
         gridBoxes.delete(i);
     }
+    gridColors = new Map();
+    gridColors.set(defaultColor, gridSize * gridSize);
 };
 
 const updateGrid = (gridSizeOld, gridSizeNew) => {
@@ -524,6 +594,8 @@ const updateGrid = (gridSizeOld, gridSizeNew) => {
         addBoxes(gridSizeOld);
     else
         removeBoxes(gridSizeOld);
+    
+    history = new gridHistory();
 };
 
 sizeSlider.addEventListener('input', function() {
@@ -534,7 +606,6 @@ sizeSlider.addEventListener('input', function() {
 
 document.addEventListener('DOMContentLoaded', loadGrid());
 
-let currentTool = null;
 const selectTool = (tool) => {
     if(currentTool == tool) {
         currentTool = null;
@@ -556,3 +627,56 @@ verticalFlipper.addEventListener('click', flip.bind(this, 'ver'));
 horizontalFlipper.addEventListener('click', flip.bind(this, 'hor'));
 undoButton.addEventListener('click', undo);
 redoButton.addEventListener('click', redo);
+
+ctrlDown = false;
+
+document.addEventListener("keydown", keyEvent => {
+    if(keyEvent.key == "Control") ctrlDown = true;
+    if(keyEvent.repeat == true) return;
+    if(ctrlDown) {
+        switch(keyEvent.key) {
+            case "z": {
+                undo();
+                break;
+            }
+            case "y": {
+                redo();
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+    else {
+        switch(keyEvent.key) {
+            case "r": {
+                rotateLeft();
+                break;
+            }
+            case "t": {
+                rotateRight();
+                break;
+            }
+            case "f": {
+                flipVer();
+                break;
+            }
+            case "g": {
+                flipHor();
+                break;
+            }
+            case "c": {
+                clearBoard();
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+});
+
+document.addEventListener("keyup", keyEvent => {
+    if(keyEvent.key == "Control") ctrlDown = false;
+});
