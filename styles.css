@@ -27,12 +27,12 @@ body {
     font-family: 'Lato', sans-serif;
 }
 
-button:hover,
-button:active {
+button:hover {
     cursor: pointer;
 }
 
 header {
+    position: relative;
     height: var(--header-height);
     display: grid;
     place-items: center;
@@ -45,6 +45,29 @@ header .title {
     color: var(--very-very-light);
     font-weight: 900;
     font-size: 2.5rem;
+}
+
+.help-button {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 38px;
+    height: 38px;
+    border: none;
+    background: none;
+    padding: none;
+    display: grid;
+    place-items: center;
+}
+
+.help-button svg {
+    fill: var(--dark-med);
+    width: 100%;
+    height: 100%;
+}
+
+.help-button:hover svg {
+    fill: var(--very-very-light);
 }
 
 main {
@@ -107,22 +130,19 @@ main {
     border-color: transparent transparent var(--light) transparent;
 }
 
-.tool-button:hover,
-.tool-button:active {
+.tool-button:hover {
     transform: scale(1.075);
     background: var(--very-very-dark);
     border-color: var(--very-very-light);
     z-index: 5;
 }
 
-.tool-button:hover svg,
-.tool-button:active svg{
+.tool-button:hover svg {
     transform: scale(1.05);
     fill: var(--light);
 }
 
-.tool-button:hover .tooltip,
-.tool-button:active .tooltip{
+.tool-button:hover .tooltip {
     display: grid;
 }
 
@@ -203,6 +223,7 @@ main {
     border-radius: 8px;  
     background: var(--very-very-light);
     box-shadow: 0 0 16px 0.5px black;
+    cursor: pointer;
 }
   
 .slider::-webkit-slider-thumb {
@@ -282,8 +303,7 @@ main {
     transition: all 100ms linear;
 }
 
-.clear-button:hover,
-.clear-button:active {
+.clear-button:hover {
     transform: translateY(-4px);
     background: var(--very-very-dark);
     border-color: var(--very-very-light);
@@ -291,43 +311,53 @@ main {
 }
 
 .grid-section {
+    position: relative;
     display: grid;
     place-items: center;
 }
 
+.grid-container {
+    --grid-first-border: 2px;
+    width: 70%;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    position: relative;
+    border: var(--grid-first-border) solid var(--very-very-light);
+}
+
 .grid {
-    --grid-first-border: 2.5px;
     position: relative;
     --grid-columns: 16;
     --grid-rows: 16;
-    width: 70%;
-    aspect-ratio: 1/1;
-    border: var(--grid-first-border) solid var(--very-very-light);
+    height: 100%;
     display: grid;
     grid-template-columns: repeat(var(--grid-columns), 1fr);
     grid-template-rows: repeat(var(--grid-rows), 1fr);
 }
 
-.grid::before {
-    --grid-second-border: calc(2 * var(--grid-first-border));
-    content: "";
-    position: absolute;
-    top: calc(0px - var(--grid-first-border) - var(--grid-second-border));
-    left: calc(0px - var(--grid-first-border) - var(--grid-second-border));
-    width: calc(100% + 2 * var(--grid-first-border));
-    height: calc(100% + 2 * var(--grid-first-border));
-    border: var(--grid-second-border) solid var(--very-dark);
-}
-
 .grid-box {
     position: relative;
-    border: .5px solid var(--dark);
     background-color: var(--very-very-dark);
 }
 
 .hover {
-    border-width: 2px;
-    border-color: var(--box-highlight);
+    border: var(--grid-first-border) solid var(--box-highlight); 
+}
+
+.left-edge {
+    border-left: none;
+}
+
+.right-edge {
+    border-right: none;
+}
+
+.top-edge {
+    border-top: none;
+}
+
+.bottom-edge {
+    border-bottom: none;
 }
 
 .hover::after {
@@ -343,6 +373,20 @@ main {
 
 .hidden {
     display: none;
+}
+
+.pan {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    height: 40px;
+    width: 40px;
+    padding: 7px;
+    display: grid;
+    place-items: center;
+    border-width: 3px;
+    border-radius: 50%;
+    box-shadow: 0 0 8px 0.25px black;
 }
 
 footer {
@@ -364,8 +408,7 @@ footer svg {
     transform: all 150ms linear;
 }
 
-footer a:hover svg,
-footer a:active svg {
+footer a:hover svg {
     transform: scale(1.15);
     fill: var(--dark-med);
 }
