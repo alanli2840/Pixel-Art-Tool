@@ -119,7 +119,7 @@ class gridHistory {
         //maxLength that can be changed
         this.maxLength = 100;
         this.index = 0;
-        //hail and tail are blank gridStatus values to allow stoppers for when reaching the ends for undo/redo
+        //head and tail are blank gridStatus values to allow stoppers for when reaching the ends for undo/redo
         this.head = new gridStatus();
         this.tail = new gridStatus();
         this.current = this.head;
@@ -137,7 +137,6 @@ class gridHistory {
     }
 
     updateHistory(gridStatus) {
-        console.log(this);
         //starts cutting off elements from the beginning of list if maxLength is reached
         if(this.index == this.maxLength) {
             this.head = this.head.nextGridStatus;
@@ -147,22 +146,16 @@ class gridHistory {
         //if current is tail from redo, go back to a non-empty gridStatus (tail.prevGridStatus)
         if(this.current == this.tail) this.current = this.tail.prevGridStatus;
         this.current.nextGridStatus = gridStatus;
-        console.log(this);
         gridStatus.prevGridStatus = this.current;
         this.current = gridStatus;
         this.current.nextGridStatus = this.tail;
         this.tail.prevGridStatus = this.current;
         this.index++;
-        console.log(this);
     }
 
     undo() {
-        //no undos when history has no changes yet
-        if(this.head.nextGridStatus == this.tail) {
-            return;
-        }
-        //cannot undo further once the end is reached
-        if(this.current == this.head) {
+        //no undos when history has no changes yet or the end is reached
+        if(this.head.nextGridStatus == this.tail || this.current == this.head) {
             return null;
         }
         else if(this.current == this.tail) {
@@ -179,12 +172,9 @@ class gridHistory {
     }
 
     redo() {
-        if(this.head.nextGridStatus == this.tail) {
-            return;
-        }
-        //if at the head, go forwards one node to get the proper data and increment index since it's an extra movement
-        else if(this.current == this.tail) {
-            return;
+        //no undos when history has no changes yet or the end is reached
+        if(this.head.nextGridStatus == this.tail || this.current == this.tail) {
+            return null;
         }
         this.current = this.current.nextGridStatus;
         if(this.current != this.tail) this.index++;
@@ -218,17 +208,13 @@ const color = (box, boxNum, newColor, isHistory = false) => {
     updateColors(prevColor, -1);
     updateColors(newColor, 1);
 
-    if(!isHistory) {
-        history.current.addStatus(new changeData(prevColor, newColor), boxNum);
-    }
+    if(!isHistory) history.current.addStatus(new changeData(prevColor, newColor), boxNum);
 
     box.style.backgroundColor = newColor;
     gridBoxes.set(boxNum, newColor);
 };
 
-const erase = (box, boxNum) => {
-    color(box, boxNum, defaultColor);
-};
+const erase = (box, boxNum) => color(box, boxNum, defaultColor);
 
 const checkColorVal = rgbVal => {
     if(rgbVal >= 255) rgbVal = 255; //make sure that the hex value does not go higher than FF
@@ -250,13 +236,9 @@ const changeShade = (box, boxNum, shade) => {
     color(box, boxNum, newColor);
 };
 
-const lightenColor = (box, boxNum) => {
-    changeShade(box, boxNum, 8);
-};
+const lightenColor = (box, boxNum) => changeShade(box, boxNum, 8);
 
-const darkenColor = (box, boxNum) => {
-    changeShade(box, boxNum, -8);
-};
+const darkenColor = (box, boxNum) => changeShade(box, boxNum, -8);
 
 //calculate the location of horizontally opposite box
 const calcOppHor = boxNum => {
@@ -265,12 +247,11 @@ const calcOppHor = boxNum => {
 
     const column = (boxNum - 1) % gridSize;
     let opp;
-    if(column <= gridSize/2) {
+    if(column <= gridSize/2)
         opp = gridSize - column - 1 + (boxNum - column);
-    }
-    else {
+    else
         opp =  (boxNum - column) + (gridSize - column - 1);
-    }
+
     return opp;
 };
 
@@ -293,12 +274,14 @@ const mirrorDrawing = (box, boxNum) => {
     opp = calcOppHor(boxNum);
   else
     opp = calcOppVer(boxNum);
+
   color(document.querySelector(`.box${opp}`), opp, currentColor);
 };
 
 const colorFill = boxNum => {
   let clusterColor = getBoxColor(boxNum);
   if(clusterColor == currentColor) {
+    //since updateBox creates a new current, move pointer back to prevent useless gridSatus
     history.current = history.current.prevGridStatus;
     return;
   }
@@ -323,7 +306,6 @@ const fillHelper = (boxNum, clusterColor) => {
 const updateBox = (boxNum, isClick) => {
     if(!mouseDown && !isClick) return;
     if(currentTool != null && currentTool != colorSelector && isClick) {
-        //console.log(history);
         history.updateHistory(new gridStatus());
     }
     const box = getBoxElement(boxNum);
@@ -374,6 +356,7 @@ const hoverEffect = boxNum => {
         document.body.style.cursor = "pointer";
     else
         document.body.style.cursor = "default";
+
     box.classList.toggle("hover");
 
     //gets rid of side borders if the box is on the edge of the grid
@@ -400,10 +383,12 @@ const rotateLeft = isHistory => {
         history.updateHistory(new gridStatus());
         history.current.addStatus(new changeData(null, null, "rotateLeft"));
     }
+
     if(Math.abs(rotationDeg) == 270)
         rotationDeg = 0;
     else
         rotationDeg -= 90;
+
     grid.style.transform = `rotate(${rotationDeg}deg)`;
 };
 
@@ -412,10 +397,12 @@ const rotateRight = isHistory => {
         history.updateHistory(new gridStatus());
         history.current.addStatus(new changeData(null, null, "rotateRight"));
     }
+
     if(Math.abs(rotationDeg) == 270)
         rotationDeg = 0;
     else
         rotationDeg += 90;
+
     grid.style.transform = `rotate(${rotationDeg}deg)`;
 };
 
@@ -432,6 +419,7 @@ const flipColRow = (rcNum, rc) => {
             curr = ((i - 1) * gridSize) + rcNum;
             opp = calcOppVer(curr);
         }
+
         const currBox = getBoxElement(curr);
         const currColor = getBoxColor(curr);
         const oppBox = getBoxElement(opp);
@@ -527,15 +515,11 @@ const undoRedo = (historyShift, doType) => {
 
 const undo = () => {
     historyShift = history.undo();
-    console.log(historyShift);
-    console.log(history);
     if(historyShift) undoRedo(historyShift, "undo");
 };
 
 const redo = () => {
     historyShift = history.redo();
-    console.log(historyShift);
-    console.log(history);
     if(historyShift) undoRedo(historyShift, "redo");
 };
 
@@ -618,9 +602,7 @@ const selectTool = (tool) => {
     currentTool.classList.toggle('active');
 };
 
-drawingTools.forEach(tool => {
-    tool.addEventListener('click', selectTool.bind(this, tool));
-});
+drawingTools.forEach(tool => tool.addEventListener('click', selectTool.bind(this, tool)));
 
 leftRotater.addEventListener('click', rotateLeft.bind(this, false));
 rightRotater.addEventListener('click', rotateRight.bind(this, false));
