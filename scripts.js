@@ -20,7 +20,7 @@ const fill = document.querySelector(".fill");
 const clear = document.querySelector(".clear-button");
 
 const defaultColor = "#343A40";
-const currentColor = "#000000";
+let currentColor = "#000000";
 const grid = document.querySelector(".grid");
 let gridBoxes = new Map();
 let gridColors = new Map();
