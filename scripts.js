@@ -27,8 +27,8 @@ let gridColors = new Map();
 let gridSize = sizeSlider.value;
 
 let mouseDown = false;
-document.querySelector(".grid-section").onmousedown = () => mouseDown = true;
-document.querySelector(".grid-section").onmouseup = () => mouseDown = false;
+grid.onmousedown = () => mouseDown = true;
+document.body.onmouseup = () => mouseDown = false;
 
 let currentTool = null;
 let rotationDeg = 0;
