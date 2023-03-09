@@ -1,27 +1,27 @@
-let sizeSlider = document.querySelector(".size-slider>input");
-let sliderText = document.querySelector(".slider-text>div");
-let colorPicker = document.querySelector(".color-picker");
+const sizeSlider = document.querySelector(".size-slider>input");
+const sliderText = document.querySelector(".slider-text>div");
+const colorPicker = document.querySelector(".color-picker");
 
-let leftRotater = document.querySelector(".rotate-left");
-let rightRotater = document.querySelector(".rotate-right");
-let verticalFlipper = document.querySelector(".flip-ver");
-let horizontalFlipper = document.querySelector(".flip-hor");
-let undoButton = document.querySelector(".undo");
-let redoButton = document.querySelector(".redo");
+const leftRotater = document.querySelector(".rotate-left");
+const rightRotater = document.querySelector(".rotate-right");
+const verticalFlipper = document.querySelector(".flip-ver");
+const horizontalFlipper = document.querySelector(".flip-hor");
+const undoButton = document.querySelector(".undo");
+const redoButton = document.querySelector(".redo");
 
-let drawingTools = document.querySelectorAll(".drawing-tools .tool-button");
-let colorSelector = document.querySelector(".color-selector");
-let pen = document.querySelector(".pen");
-let eraser = document.querySelector(".eraser");
-let lighten = document.querySelector(".lighten");
-let darken = document.querySelector(".darken");
-let mirrorDraw = document.querySelector(".mirror-draw");
-let fill = document.querySelector(".fill");
-let clear = document.querySelector(".clear-button");
+const drawingTools = document.querySelectorAll(".drawing-tools .tool-button");
+const colorSelector = document.querySelector(".color-selector");
+const pen = document.querySelector(".pen");
+const eraser = document.querySelector(".eraser");
+const lighten = document.querySelector(".lighten");
+const darken = document.querySelector(".darken");
+const mirrorDraw = document.querySelector(".mirror-draw");
+const fill = document.querySelector(".fill");
+const clear = document.querySelector(".clear-button");
 
-let defaultColor = "#343A40";
-let currentColor = "#000000";
-let grid = document.querySelector(".grid");
+const defaultColor = "#343A40";
+const currentColor = "#000000";
+const grid = document.querySelector(".grid");
 let gridBoxes = new Map();
 let gridColors = new Map();
 let gridSize = sizeSlider.value;
@@ -125,7 +125,6 @@ class gridHistory {
         this.current = this.head;
         this.head.nextGridStatus = this.tail;
         this.tail.prevGridStatus = this.head;
-        console.log(this);
     }
 
     get getCurrent() {
