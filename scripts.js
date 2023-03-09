@@ -298,7 +298,10 @@ const mirrorDrawing = (box, boxNum) => {
 
 const colorFill = boxNum => {
   let clusterColor = getBoxColor(boxNum);
-  if(clusterColor == currentColor) return;
+  if(clusterColor == currentColor) {
+    history.current = history.current.prevGridStatus;
+    return;
+  }
   fillHelper(boxNum, clusterColor);
 };
 
