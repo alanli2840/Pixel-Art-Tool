@@ -119,12 +119,13 @@ class gridHistory {
         //maxLength that can be changed
         this.maxLength = 100;
         this.index = 0;
-        this.current = new gridStatus();
         //hail and tail are blank gridStatus values to allow stoppers for when reaching the ends for undo/redo
-        this.head = this.current;
+        this.head = new gridStatus();
         this.tail = new gridStatus();
+        this.current = this.head;
         this.head.nextGridStatus = this.tail;
         this.tail.prevGridStatus = this.head;
+        console.log(this);
     }
 
     get getCurrent() {
@@ -136,6 +137,7 @@ class gridHistory {
     }
 
     updateHistory(gridStatus) {
+        console.log(this);
         //starts cutting off elements from the beginning of list if maxLength is reached
         if(this.index == this.maxLength) {
             this.head = this.head.nextGridStatus;
@@ -143,13 +145,15 @@ class gridHistory {
             this.index--;
         }
         //if current is tail from redo, go back to a non-empty gridStatus (tail.prevGridStatus)
-        if(this.current = this.tail) this.current = this.tail.prevGridStatus;
+        if(this.current == this.tail) this.current = this.tail.prevGridStatus;
         this.current.nextGridStatus = gridStatus;
+        console.log(this);
         gridStatus.prevGridStatus = this.current;
         this.current = gridStatus;
         this.current.nextGridStatus = this.tail;
         this.tail.prevGridStatus = this.current;
         this.index++;
+        console.log(this);
     }
 
     undo() {
@@ -179,18 +183,12 @@ class gridHistory {
             return;
         }
         //if at the head, go forwards one node to get the proper data and increment index since it's an extra movement
-        if(this.current == this.head) {
-            this.current = this.head.nextGridStatus;
-            this.index++;
-        }
         else if(this.current == this.tail) {
-            this.current == this.tail.prevGridStatus;
             return;
         }
-        let returnVal = this.current;
         this.current = this.current.nextGridStatus;
         if(this.current != this.tail) this.index++;
-        return returnVal;
+        return this.current;
     }
 }
 
@@ -436,8 +434,8 @@ const flipColRow = (rcNum, rc) => {
         const oppBox = getBoxElement(opp);
         const oppColor = getBoxColor(opp);
         
-        color(currBox, curr, oppColor);
-        color(oppBox, opp, currColor)
+        color(currBox, curr, oppColor, true);
+        color(oppBox, opp, currColor, true)
     }
 };
 
@@ -526,15 +524,15 @@ const undoRedo = (historyShift, doType) => {
 
 const undo = () => {
     historyShift = history.undo();
-    //console.log(historyShift);
-    //console.log(history);
+    console.log(historyShift);
+    console.log(history);
     if(historyShift) undoRedo(historyShift, "undo");
 };
 
 const redo = () => {
     historyShift = history.redo();
-    //console.log(historyShift);
-    //console.log(history);
+    console.log(historyShift);
+    console.log(history);
     if(historyShift) undoRedo(historyShift, "redo");
 };
 
